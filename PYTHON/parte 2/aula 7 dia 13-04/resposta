@@ -1,0 +1,53 @@
+codigo do livro, nome do livro, volume, numero de paginas e preço
+
+CRIAR ARQUIVO
+with open("livraria.txt","w") as f:
+    f.write("livro 1")
+    f.write("1")
+    f.write("100")
+    f.write("40")
+
+
+import sqlite3
+connection = sqlite3.connect("BD1.db")
+tabela = connection.cursor();
+
+def coletar_dados(linha):
+    nome_livro = linha[0]
+    volume = linha[1]
+    num_paginas = linha[2]
+    preco = linha[3]
+    print(nome_livro, volume, num_paginas, preco)
+    tabela.execute("""INSERT INTO livraria (nome_livro, volume, num_paginas, preco) VALUES (?,?,?,?)""",
+                   (nome_livro, volume, num_paginas, preco))
+    connection.commit()
+
+tabela.execute("""
+    CREATE TABLE livraria(
+        codigo_livro INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        nome_livro TEXT NOT NULL,
+        volume REAL,
+        num_paginas REAL,
+        preco REAL);
+""")
+print("tabela criada com sucesso")
+connection.commit()
+
+arquivo = open("livraria.txt", "r", encoding="utf-8")
+for i in arquivo:
+    coletar_dados(i.split())
+
+
+import sqlite3
+connection = sqlite3.connect("BD1.db")
+tabela = connection.cursor();
+
+pesq = int(input("informe o codigo do livro"))
+
+tabela = connection.execute("SELECT codigo_livro, nome_livro, volume, num_paginas, preco FROM livraria")
+template = "{0:<15}{1:15}{2:<15}{3:<15}{4:<15}"
+print(template.format("codigo_livro", "nome_livro", "volume", "num_paginas", "preco"))
+for i in tabela:
+    print(template.format(*i))
+
+connection.commit()

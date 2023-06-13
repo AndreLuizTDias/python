@@ -12,34 +12,39 @@ Original file is located at
 """
 
 import pandas as pd
-df = pd.read_csv('https://raw.githubusercontent.com/AndreLuizTDias/python/main/NF3-BIG-DATA-Andre-Luiz-Trigueiro-Dias/world_alcohol.csv', encoding = 'latin-1', sep = ',', decimal = '.')
-df.groupby('Beverage Types').count()
+df1 = pd.read_csv('https://raw.githubusercontent.com/AndreLuizTDias/python/main/NF3-BIG-DATA-Andre-Luiz-Trigueiro-Dias/world_alcohol.csv', encoding = 'latin-1', sep = ',', decimal = '.')
+agrupamento_tipo_bebida = df1.groupby('Beverage Types')
+#testando
+agrupamento_tipo_bebida.count()
 
 """###b. Agrupe os dados por Região e por Ano;"""
 
-df.groupby('WHO region')['Year'].value_counts()
+agrupamento_por_regiao_e_ano = df1.groupby('WHO region')['Year']
+#testando
+agrupamento_por_regiao_e_ano.value_counts()
 
 """###c. Seção de Contagens: Contar a ocorrência de Regiões, de Países e a soma da coluna de valores por Bebida."""
 
-regiao = df['WHO region'].value_counts()
+regiao = df1['WHO region'].value_counts().to_string()
 print(regiao,"\n")
 
-paises = df['Country'].value_counts()
+paises = df1['Country'].value_counts().to_string()
 print(paises,"\n")
 
-df = df.fillna(0)
-soma_bebidas = df['Display Value'].sum()
+df = df1.fillna(0)
+soma_bebidas = df1['Display Value'].sum()
 print("soma dos valores das bebidas: ", soma_bebidas)
 
 """###d. Realize análises estatísticas da coluna dos valores: Média, Moda, Mediana, Estatística Descritiva e Gráfico de comparação dos valores agrupados por tipo de bebida."""
 
-df = df.fillna(0)
-print('Media, Moda e Mediana')
-print("Media..: ", df['Display Value'].mean())
-print("Moda...: ", df['Display Value'].mode().to_string())
-print("Mediana: ", df['Display Value'].median())
+df1 = df1.fillna(0)
+grupo = df1.groupby('Beverage Types')['Display Value']
 
-grupo = df.groupby('Beverage Types')['Display Value']
+print('MEDIA, MEDIANA E MODA')
+print("Media..: ", grupo.mean(),"\n")
+print("Moda...: ", df1['Display Value'].mode().to_string(),"\n")
+print("Mediana: ", grupo.median(),"\n")
+
 print('\nEstatística Descritiva',grupo.describe(),'\n')
 
 print('Grafico de comparaçao')
@@ -50,12 +55,12 @@ grupo.count().plot(kind= 'bar')
 """
 
 #i. Mostrar a coluna de bebidas do ano de 1985.
-bebidas_1985 = df.loc[df['Year'] == 1985]
+bebidas_1985 = df1.loc[df1['Year'] == 1985]
 bebidas_1985
 
 #ii. Mostrar a coluna de Região com valores acima de 4.
-df = df.fillna(0)
-regiao_valores_acima_4 = df.loc[df['Display Value'] > 4]
+df1 = df1.fillna(0)
+regiao_valores_acima_4 = df1.loc[df1['Display Value'] > 4]
 regiao_valores_acima_4
 
 """#2. Seja o dataset chamado cursos-prouni.csv que se encontra no endereço Cursos e notas de corte do PROUNI 2018 - Datasets - Brasil.IO. Baixe o arquivo, armazene no seu github** e obtenha os dados a partir desse endereço do github e realize as seguintes análises (2,5 pontos):
@@ -64,52 +69,54 @@ regiao_valores_acima_4
 """
 
 import pandas as pd
-df = pd.read_csv('https://raw.githubusercontent.com/AndreLuizTDias/python/main/NF3-BIG-DATA-Andre-Luiz-Trigueiro-Dias/cursos-prouni.csv', encoding = 'utf-8', sep = ',')
-df['nota_integral_ampla'] = df['nota_integral_ampla'].fillna(0.0)
-df['nota_integral_cotas'] = df['nota_integral_cotas'].fillna(0.0)
-df['nota_parcial_ampla']  = df['nota_parcial_ampla'].fillna(0.0)
-df['nota_parcial_cotas']  = df['nota_parcial_cotas'].fillna(0.0)
-df.head(5)
+df2 = pd.read_csv('https://raw.githubusercontent.com/AndreLuizTDias/python/main/NF3-BIG-DATA-Andre-Luiz-Trigueiro-Dias/cursos-prouni.csv', encoding = 'utf-8', sep = ',')
+df2['nota_integral_ampla'] = df2['nota_integral_ampla'].fillna(0.0)
+df2['nota_integral_cotas'] = df2['nota_integral_cotas'].fillna(0.0)
+df2['nota_parcial_ampla']  = df2['nota_parcial_ampla'].fillna(0.0)
+df2['nota_parcial_cotas']  = df2['nota_parcial_cotas'].fillna(0.0)
+df2.head(5)
 
 """###b. Agrupe os dados pelo grau (Bacharelado, Licenciatura, etc)."""
 
-df.groupby("grau").count()
+agrupamento_por_grau = df2.groupby("grau")
+agrupamento_por_grau.count()
 
 """###c. Agrupe os dados pelos cursos de Matemática, Medicina e Pedagogia."""
 
-cursos = df.loc[df['curso_busca'].isin(['Medicina', 'Pedagogia','Matemática'])]
+cursos = df2.loc[df2['curso_busca'].isin(['Medicina', 'Pedagogia','Matemática'])]
 cursos['curso_busca'].value_counts()
 
 """###d. Agrupe os dados por Estado e obtenha a média de notas de corte por Estado."""
 
-df.groupby("uf_busca")[["nota_integral_ampla","nota_integral_cotas", "nota_parcial_ampla", "nota_parcial_cotas"]].mean()
+media_notas_corte_por_estados = df2.groupby("uf_busca")[["nota_integral_ampla","nota_integral_cotas", "nota_parcial_ampla", "nota_parcial_cotas"]]
+media_notas_corte_por_estados.mean()
 
 """###e. Agrupe os dados pelos cursos Tecnológicos."""
 
-tecnologicos = df.loc[df['grau'] == 'Tecnológico']
+tecnologicos = df2.loc[df2['grau'] == 'Tecnológico']
 tecnologicos.groupby("grau").count()
 
 """###f. Elimine a coluna “cidade_filtro” do dataframe."""
 
-df.drop(columns=['cidade_filtro'])
-df.head(1)
+df2 = df2.drop(columns=['cidade_filtro'])
+df2.head(1)
 
 """###g. Apresente a média das mensalidades dos cursos de Medicina."""
 
-media_mensalidade_medicina = df.loc[df['curso_busca'] == 'Medicina']
+media_mensalidade_medicina = df2.loc[df2['curso_busca'] == 'Medicina']
 print("media mensalidade do curso de medicina: ", media_mensalidade_medicina['mensalidade'].mean())
 
 """###h. Média das notas de corte dos cursos de tempo integral."""
 
-cursos_tempo_integral = df.loc[df['turno'] == 'Integral']
+cursos_tempo_integral = df2.loc[df2['turno'] == 'Integral']
 cursos_tempo_integral.groupby("nome")[["nota_integral_ampla","nota_integral_cotas", "nota_parcial_ampla", "nota_parcial_cotas"]].mean()
 
 """###i. Estatística Descritiva das Notas Integral Ampla dos cursos de Bacharelado."""
 
-Bacharelado = df.loc[df['grau'] == 'Bacharelado']
+Bacharelado = df2.loc[df2['grau'] == 'Bacharelado']
 Bacharelado['nota_integral_ampla'].describe()
 
 """###j. Gráfico comparativo entre o grau dos cursos (Bacharelado, Licenciatura, Tecnologia, etc) pelas Notas Integral de Cotas."""
 
-cursos = df.groupby("grau")
+cursos = df2.groupby("grau")
 notas = cursos['nota_integral_cotas'].count().plot(kind= 'bar')
